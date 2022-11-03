@@ -15,7 +15,7 @@ public:
     virtual QString GetNCDirByPath(QString path)=0;
     virtual QString GetNcDirZipByPath(QString path)=0;
     virtual bool SetNcProgramByPath(QString code,QString path)=0;
-    virtual bool DeleteProgramByPath(QString path)=0;
+    virtual bool DelNcProgramByPath(QString path)=0;
 };
 
 #endif // ABSTRACTCNC_H

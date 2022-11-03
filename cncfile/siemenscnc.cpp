@@ -10,6 +10,8 @@ SiemensCNC::~SiemensCNC(){
 }
 
 bool SiemensCNC::Connect(QString ip, QString user, QString pass){
+    ip="";
+    user=pass;
     return true;
 }
 
@@ -19,29 +21,32 @@ bool SiemensCNC::DisConnect(){
 
 QStringList SiemensCNC::GetSubItemInfoOfADir(QString path){
     QStringList result;
+    result.append("Dir|"+path);
     return result;
 }
 
 QString SiemensCNC::GetNcProgramByPath(QString path){
-    QString result;
+    QString result=path;
     return result;
 }
 
 QString SiemensCNC::GetNCDirByPath(QString path){
-    QString result;
+    QString result=path;
     return result;
 }
 
 QString SiemensCNC::GetNcDirZipByPath(QString path){
-    QString result;
+    QString result=path;
     return result;
 }
 
 bool SiemensCNC::SetNcProgramByPath(QString code,QString path){
+    code=path;
     return  true;
 }
 
-bool SiemensCNC::DeleteProgramByPath(QString path){
+bool SiemensCNC::DelNcProgramByPath(QString path){
+    path="";
     return  true;
 }
 

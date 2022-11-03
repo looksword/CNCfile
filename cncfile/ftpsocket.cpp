@@ -371,6 +371,7 @@ int ftpsocket::Upload(QString strFileName, QString code)
 
 QStringList ftpsocket::GetFileList(QString strMask)
 {
+    strMask = "";
     QStringList strsFileList;
     if(CreateDataSocket())
     {

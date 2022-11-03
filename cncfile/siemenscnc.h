@@ -16,7 +16,7 @@ public:
     QString GetNCDirByPath(QString path)override;
     QString GetNcDirZipByPath(QString path)override;
     bool SetNcProgramByPath(QString code,QString path)override;
-    bool DeleteProgramByPath(QString path) override;
+    bool DelNcProgramByPath(QString path) override;
 };
 
 #endif // SIEMENSCNC_H

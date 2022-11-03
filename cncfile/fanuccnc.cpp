@@ -5,6 +5,7 @@ FanucCNC::FanucCNC()
 #ifdef Q_OS_UNIX
     cnc_startupprocess(3,"fwlibeth.log");
 #endif
+    this->OldPath = "//CNC_MEM/";
 }
 
 FanucCNC::~FanucCNC(){
@@ -12,11 +13,14 @@ FanucCNC::~FanucCNC(){
 }
 
 bool FanucCNC::Connect(QString ip, QString user, QString pass){
-    QByteArray newip = "192.168.1.1";
+    char* tempip;
+    QByteArray newip = ip.toLatin1();
+    tempip = newip.data();
     h = 0;
     short ret = EW_OK;
-    ret = cnc_allclibhndl3(newip.data(),8193,3,&h);
+    ret = cnc_allclibhndl3(tempip,8193,3,&h);
     if(ret != EW_OK){
+        user = pass;
         return false;
     }
     return true;
@@ -44,6 +48,18 @@ char* FanucCNC::ToStdPrgName(char* path,char* out)
 
 QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
     QStringList result;
+    if(path.isEmpty())
+    {
+        path = OldPath;
+    }
+    else
+    {
+        if(!path.contains("//CNC_MEM/"))
+        {
+            path = OldPath + path + "/";
+        }
+        OldPath = path;
+    }
     std::string pathStr = path.toStdString();
     if(pathStr[pathStr.length() - 1] != '/')
     {
@@ -70,7 +86,7 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
         for(int i = 0;i < num; i++)
         {
             QString newstr(odbPdfSDirs[i].d_f);
-            result.append(newstr);
+            result.append("Dir|" + newstr);
         }
         if (num < 100)
         {
@@ -108,7 +124,7 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
             fileCount++;
 
             QString newstr(ToStdPrgName(prg[i].d_f,prgn));
-            result.append(newstr);
+            result.append("File|" + newstr);
         }
         if (num < 100)
         {
@@ -140,20 +156,35 @@ QString FanucCNC::GetNcProgramByPath(QString path){
             if(i >= 99)
             {
                 cnc_upend4(h);
-                //sleep 50 ms
+#ifdef Q_OS_WIN
+                Sleep(50);
+#else
+                struct timespec ts = {50 / 1000, (50 % 1000) * 1000 * 1000};
+                nanosleep(&ts, NULL);
+#endif
                 return result;
             }
             if(ret == EW_BUSY || ret == EW_RESET)
             {
                 cnc_upend4(h);
-                //sleep 50 ms
+#ifdef Q_OS_WIN
+                Sleep(50);
+#else
+                struct timespec ts = {50 / 1000, (50 % 1000) * 1000 * 1000};
+                nanosleep(&ts, NULL);
+#endif
             }
         }
         if (ret == EW_OK)
         {
             break;
         }
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
     }
 
     std::string prg = "";
@@ -165,7 +196,12 @@ QString FanucCNC::GetNcProgramByPath(QString path){
         ret = cnc_upload4(h, &count, buf);
         if (ret == EW_BUFFER)
         {
-            //sleep 8 ms
+#ifdef Q_OS_WIN
+            Sleep(8);
+#else
+            struct timespec ts = {8 / 1000, (8 % 1000) * 1000 * 1000};
+            nanosleep(&ts, NULL);
+#endif
             retryCount++;
             if(retryCount < 1000)
             {
@@ -198,7 +234,12 @@ QString FanucCNC::GetNcProgramByPath(QString path){
         {
             break;
         }
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
     }
 
     delete temppath;
@@ -219,26 +260,46 @@ std::string FanucCNC::GetNcProgramByPathEx(char* path, int* errCode)
         ret = cnc_upstart4(h, 0, path);
         if (ret != EW_OK)
         {
-            //sleep 100 ms
+#ifdef Q_OS_WIN
+            Sleep(100);
+#else
+            struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+            nanosleep(&ts, NULL);
+#endif
             if (i >= 99)
             {
                 *errCode = ret;
                 cnc_upend4(h);
-                //sleep 50 ms
+#ifdef Q_OS_WIN
+            Sleep(50);
+#else
+            struct timespec ts2 = {50 / 1000, (50 % 1000) * 1000 * 1000};
+            nanosleep(&ts2, NULL);
+#endif
                 return "";
             }
 
             if (ret == EW_BUSY)
             {
                 cnc_upend4(h);
-                //sleep 50 ms
+#ifdef Q_OS_WIN
+                Sleep(50);
+#else
+                struct timespec ts3 = {50 / 1000, (50 % 1000) * 1000 * 1000};
+                nanosleep(&ts3, NULL);
+#endif
             }
         }
 
         if (ret == EW_OK)
             break;
 
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
     }
 
     std::string msg = "";
@@ -250,7 +311,12 @@ std::string FanucCNC::GetNcProgramByPathEx(char* path, int* errCode)
         ret = cnc_upload4(h, &count, buf);
         if (ret == EW_BUFFER)
         {
-            //sleep 8 ms
+#ifdef Q_OS_WIN
+            Sleep(8);
+#else
+            struct timespec ts = {8 / 1000, (8 % 1000) * 1000 * 1000};
+            nanosleep(&ts, NULL);
+#endif
             retryCount++;
             if (retryCount < 1000)
             {
@@ -284,7 +350,12 @@ std::string FanucCNC::GetNcProgramByPathEx(char* path, int* errCode)
         if (ret == EW_OK)
             break;
 
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
     }
 
     if (msg.empty())
@@ -482,13 +553,18 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
         return false;
     }
 
+    if(!path.contains("//CNC_MEM/"))
+    {
+        path = OldPath + path;
+    }
+
     char* temppath;
     QByteArray ba1 = path.toLatin1();
     temppath = ba1.data();
 
     char* tempcode;
-    QByteArray ba2 = code.toLatin1();
-    tempcode = ba2.data();
+    std::string strcode = std::string((const char*)code.toLatin1(), code.size());
+    tempcode = (char *)strcode.c_str();
 
     // 下载前检测磁盘剩余空间
     ODBNC buf;
@@ -505,7 +581,7 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
     std::string dir = pathStr.substr(0, pos);
     std::string filename = pathStr.substr(pos+1, pathStr.length() - pos - 1);
 
-    int codeLen = code.length();
+    int codeLen = strcode.size();
     char param3202 = 0;
     bool wrProtect = false;
     if ((filename[1] == '8') || (filename[1] == '9'))
@@ -575,7 +651,12 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
         if (ret == EW_OK)
             break;
 
-        //sleep 10 ms
+#ifdef Q_OS_WIN
+            Sleep(10);
+#else
+            struct timespec ts = {10 / 1000, (10 % 1000) * 1000 * 1000};
+            nanosleep(&ts, NULL);
+#endif
     }
 
     //start
@@ -593,7 +674,12 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
         if (ret == EW_OK)
             break;
 
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
     }
 
     //MsgOut(msgHandler, userToken, "Path", filePath, true, 0);//only for standalone test
@@ -611,7 +697,12 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
         ret = cnc_download4(h, &len, &tempcode[count]);
         if (ret == EW_BUFFER)
         {
-            //sleep 50 ms
+#ifdef Q_OS_WIN
+            Sleep(50);
+#else
+            struct timespec ts = {50 / 1000, (50 % 1000) * 1000 * 1000};
+            nanosleep(&ts, NULL);
+#endif
             retryCount++;
             if (retryCount < 1000)
             {
@@ -667,7 +758,12 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
     if (!isSuccess)
     {
         cnc_resetconnect(h);
-        //sleep 100 ms
+#ifdef Q_OS_WIN
+        Sleep(100);
+#else
+        struct timespec ts = {100 / 1000, (100 % 1000) * 1000 * 1000};
+        nanosleep(&ts, NULL);
+#endif
         return false;
     }
 
@@ -700,8 +796,25 @@ bool FanucCNC::SetNcProgramByPath(QString code,QString path){
     return  isSuccess;
 }
 
-bool FanucCNC::DeleteProgramByPath(QString path)
+bool FanucCNC::DelNcProgramByPath(QString path)
 {
-    return true;
+    if(!path.contains("//CNC_MEM/"))
+    {
+        path = OldPath + path;
+    }
+    char* temppath;
+    QByteArray ba1 = path.toLatin1();
+    temppath = ba1.data();
+    short ret = cnc_pdf_del(h, temppath);
+    if (ret != EW_OK)
+    {
+        ODBERR C;
+        ret = cnc_getdtailerr(h, &C);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 

@@ -1,0 +1,61 @@
+Login using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/" --user "test:142293"
+ 
+
+
+
+
+Upload using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/" --user "testuser:testpassword" -T "C:\test\testfile.xml" --ftp-create-dirs
+
+
+
+
+
+Download using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/testfile.xml" --user "testuser:testpassword" -o "C:\test\testfile.xml" --ftp-create-dirs
+ 
+
+
+
+
+Rename using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/" --user "testuser:testpassword" -Q "-RENAME
+  ‘/CurlPutTest/testfile.xml’  ‘/CurlPutTest/testfile.xml.tmp’"   --ftp-create-dirs
+ 
+
+
+
+
+Delete using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/ " --user "testuser:testpassword" -Q "–RM /CurlPutTest/testfile.xml" --ftp-create-dirs
+ 
+
+
+
+
+Make directory using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/test " --user "testuser:testpassword" -Q "–MKDIR /CurlPutTest/Test" --ftp-create-dirs
+ 
+
+
+
+
+Remove directory using curl on SFTP
+-------------------------------------------------------------------------------------------------------
+curl  -k "sftp://192.168.44.100:22/CurlPutTest/test " --user "testuser:testpassword" -Q "–RMDIR /CurlPutTest/Test" --ftp-create-dirs
+
+
+
+
+
+
+
+
+

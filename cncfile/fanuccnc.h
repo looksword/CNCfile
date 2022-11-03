@@ -17,7 +17,7 @@ public:
     QString GetNCDirByPath(QString path)override;
     QString GetNcDirZipByPath(QString path)override;
     bool SetNcProgramByPath(QString code,QString path)override;
-    bool DeleteProgramByPath(QString path) override;
+    bool DelNcProgramByPath(QString path) override;
 
 private:
     char* ToStdPrgName(char* path,char* out);
@@ -27,6 +27,7 @@ private:
     std::string GetRandomMainProgram();
 
     unsigned short h;
+    QString OldPath;
 };
 
 #endif // FANUCCNC_H

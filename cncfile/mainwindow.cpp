@@ -7,7 +7,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->ThisCNC = Q_NULLPTR;
     this->allInfo = "";
+
+    //fanuc
+    ui->ipEdit->setText("192.168.44.128");
+    ui->comboBox_cnctype->setCurrentIndex(1);
+    ui->userLabel->hide();
+    ui->userEdit->hide();
+    ui->passLabel->hide();
+    ui->passEdit->hide();
 }
 
 MainWindow::~MainWindow()
@@ -58,32 +67,39 @@ void MainWindow::on_connectButton_clicked()
                 ThisCNC = new BrotherCNC();
             }
             break;
+            case 1:{
+                ThisCNC = new FanucCNC();
+            }
+            break;
         }
-        bool tryconnect = ThisCNC->Connect(ip, user, pass);
-        if(tryconnect)
+        if(ThisCNC)
         {
-            ui->comboBox_cnctype->setEnabled(false);
-            CNCconnected = true;
-            SetNetInfo("connect success!\n");
-            ui->connectButton->setText("DisConnect");
-
-
-            QStringList Files = ThisCNC->GetSubItemInfoOfADir("");
-            foreach(QString file,Files)
+            bool tryconnect = ThisCNC->Connect(ip, user, pass);
+            if(tryconnect)
             {
-                QStringList fileinfo = file.split("|");
-                if(fileinfo.count() > 1)
+                ui->comboBox_cnctype->setEnabled(false);
+                CNCconnected = true;
+                SetNetInfo("connect success!\n");
+                ui->connectButton->setText("DisConnect");
+
+
+                QStringList Files = ThisCNC->GetSubItemInfoOfADir("");
+                foreach(QString file,Files)
                 {
-                    QTreeWidgetItem* item = new QTreeWidgetItem(ui->fileTree);
-                    item->setText(0, fileinfo[0]);
-                    item->setText(1, fileinfo[1]);
-                    ui->fileTree->addTopLevelItem(item);
+                    QStringList fileinfo = file.split("|");
+                    if(fileinfo.count() > 1)
+                    {
+                        QTreeWidgetItem* item = new QTreeWidgetItem(ui->fileTree);
+                        item->setText(0, fileinfo[0]);
+                        item->setText(1, fileinfo[1]);
+                        ui->fileTree->addTopLevelItem(item);
+                    }
                 }
             }
-        }
-        else
-        {
-            SetNetInfo("connect failed!\n");
+            else
+            {
+                SetNetInfo("connect failed!\n");
+            }
         }
     }
     else
@@ -91,7 +107,7 @@ void MainWindow::on_connectButton_clicked()
         if(ThisCNC)
         {
             ThisCNC->DisConnect();
-            ThisCNC = nullptr;
+            ThisCNC = Q_NULLPTR;
             CNCconnected = false;
             ui->comboBox_cnctype->setEnabled(true);
             SetNetInfo("disconnect~\n");
@@ -171,7 +187,7 @@ void MainWindow::on_deleteButton_clicked()
         if(type=="Dir")
             return;
         QString downName = curItem->text(1);
-        bool success = ThisCNC->DeleteProgramByPath(downName);
+        bool success = ThisCNC->DelNcProgramByPath(downName);
         if(success)
         {
             SetNetInfo("Delete " + downName + " finished~\n");
@@ -195,6 +211,7 @@ void MainWindow::on_deleteButton_clicked()
 
 void MainWindow::on_fileTree_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
+    column = column > 0 ? column : 0;
     QString type = item->text(0);
     if(type!="Dir")
         return;

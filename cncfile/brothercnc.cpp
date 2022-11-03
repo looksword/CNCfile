@@ -186,7 +186,7 @@ bool BrotherCNC::SetNcProgramByPath(QString code,QString path){
     }
 }
 
-bool BrotherCNC::DeleteProgramByPath(QString path)
+bool BrotherCNC::DelNcProgramByPath(QString path)
 {
     int iRet = FtpClient->DeleteRemoteFile(path);
     if(iRet == 0)

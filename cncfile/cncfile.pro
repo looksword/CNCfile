@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     abstractcnc.cpp \
     brothercnc.cpp \
+    ezclient.cpp \
     fanuccnc.cpp \
     ftpsocket.cpp \
     main.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     abstractcnc.h \
     brothercnc.h \
     Fwlib32.h \
+    ezclient.h \
     fanuccnc.h \
     ftpsocket.h \
     mainwindow.h \
