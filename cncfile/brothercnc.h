@@ -7,10 +7,10 @@
 class BrotherCNC : public AbstractCNC
 {
 public:
-    BrotherCNC();
+    BrotherCNC(QString ip, QString user, QString pass);
     ~BrotherCNC();
 
-    bool Connect(QString ip, QString user, QString pass) override;
+    bool Connect() override;
     bool DisConnect()override;
     QStringList GetSubItemInfoOfADir(QString path)override;
     QString GetNcProgramByPath(QString path)override;

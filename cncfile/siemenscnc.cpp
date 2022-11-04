@@ -1,6 +1,6 @@
 #include "siemenscnc.h"
 
-SiemensCNC::SiemensCNC()
+SiemensCNC::SiemensCNC(QString ip, QString user, QString pass):AbstractCNC(ip,user,pass)
 {
 
 }
@@ -9,9 +9,7 @@ SiemensCNC::~SiemensCNC(){
 
 }
 
-bool SiemensCNC::Connect(QString ip, QString user, QString pass){
-    ip="";
-    user=pass;
+bool SiemensCNC::Connect(){
     return true;
 }
 

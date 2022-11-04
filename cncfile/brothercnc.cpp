@@ -1,13 +1,13 @@
 #include "brothercnc.h"
 
-BrotherCNC::BrotherCNC(){
+BrotherCNC::BrotherCNC(QString ip, QString user, QString pass):AbstractCNC(ip,user,pass){
 }
 
 BrotherCNC::~BrotherCNC(){
     delete FtpClient;
 }
 
-bool BrotherCNC::Connect(QString ip, QString user, QString pass){
+bool BrotherCNC::Connect(){
     FtpClient = new ftpsocket(ip,user,pass);
     return FtpClient->Connect();
 }

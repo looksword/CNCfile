@@ -64,17 +64,17 @@ void MainWindow::on_connectButton_clicked()
         QString pass = ui->passEdit->text();
         switch (cnctype) {
             case 0:{
-                ThisCNC = new BrotherCNC();
+                ThisCNC = new BrotherCNC(ip,user,pass);
             }
             break;
             case 1:{
-                ThisCNC = new FanucCNC();
+                ThisCNC = new FanucCNC(ip,user,pass);
             }
             break;
         }
         if(ThisCNC)
         {
-            bool tryconnect = ThisCNC->Connect(ip, user, pass);
+            bool tryconnect = ThisCNC->Connect();
             if(tryconnect)
             {
                 ui->comboBox_cnctype->setEnabled(false);

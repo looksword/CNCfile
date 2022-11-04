@@ -7,10 +7,10 @@
 class FanucCNC : public AbstractCNC
 {
 public:
-    FanucCNC();
+    FanucCNC(QString ip, QString user, QString pass);
     ~FanucCNC();
 
-    bool Connect(QString ip, QString user, QString pass) override;
+    bool Connect() override;
     bool DisConnect()override;
     QStringList GetSubItemInfoOfADir(QString path)override;
     QString GetNcProgramByPath(QString path)override;

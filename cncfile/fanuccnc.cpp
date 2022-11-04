@@ -1,6 +1,6 @@
 #include "fanuccnc.h"
 
-FanucCNC::FanucCNC()
+FanucCNC::FanucCNC(QString ip, QString user, QString pass):AbstractCNC(ip,user,pass)
 {
 #ifdef Q_OS_UNIX
     cnc_startupprocess(3,"fwlibeth.log");
@@ -12,7 +12,7 @@ FanucCNC::~FanucCNC(){
 
 }
 
-bool FanucCNC::Connect(QString ip, QString user, QString pass){
+bool FanucCNC::Connect(){
     char* tempip;
     QByteArray newip = ip.toLatin1();
     tempip = newip.data();
@@ -20,7 +20,6 @@ bool FanucCNC::Connect(QString ip, QString user, QString pass){
     short ret = EW_OK;
     ret = cnc_allclibhndl3(tempip,8193,3,&h);
     if(ret != EW_OK){
-        user = pass;
         return false;
     }
     return true;

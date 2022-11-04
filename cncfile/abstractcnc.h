@@ -7,8 +7,8 @@
 class AbstractCNC
 {
 public:
-    AbstractCNC();
-    virtual bool Connect(QString ip, QString user, QString pass)=0;
+    AbstractCNC(QString ip, QString user, QString pass);
+    virtual bool Connect()=0;
     virtual bool DisConnect()=0;
     virtual QStringList GetSubItemInfoOfADir(QString path)=0;
     virtual QString GetNcProgramByPath(QString path)=0;
@@ -16,6 +16,10 @@ public:
     virtual QString GetNcDirZipByPath(QString path)=0;
     virtual bool SetNcProgramByPath(QString code,QString path)=0;
     virtual bool DelNcProgramByPath(QString path)=0;
+protected:
+    QString ip;
+    QString user;
+    QString pass;
 };
 
 #endif // ABSTRACTCNC_H

@@ -7,10 +7,10 @@
 class MitsubishiCNC : public AbstractCNC
 {
 public:
-    MitsubishiCNC();
+    MitsubishiCNC(QString ip, QString user, QString pass);
     ~MitsubishiCNC();
 
-    bool Connect(QString ip, QString user, QString pass) override;
+    bool Connect()override;
     bool DisConnect()override;
     QStringList GetSubItemInfoOfADir(QString path)override;
     QString GetNcProgramByPath(QString path)override;
