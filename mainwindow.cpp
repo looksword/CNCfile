@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->ThisCNC = Q_NULLPTR;
     this->allInfo = "";
+    this->OldPath = "";
 
-    //fanuc
-    ui->ipEdit->setText("192.168.44.128");
+    //brother
+    ui->ipEdit->setText("192.168.44.128");//("127.0.0.1");
     ui->comboBox_cnctype->setCurrentIndex(1);
     ui->userLabel->hide();
     ui->userEdit->hide();
@@ -83,7 +84,7 @@ void MainWindow::on_connectButton_clicked()
                 ui->connectButton->setText("DisConnect");
 
 
-                QStringList Files = ThisCNC->GetSubItemInfoOfADir("");
+                QStringList Files = ThisCNC->GetSubItemInfoOfADir(OldPath);
                 foreach(QString file,Files)
                 {
                     QStringList fileinfo = file.split("|");
@@ -113,6 +114,7 @@ void MainWindow::on_connectButton_clicked()
             SetNetInfo("disconnect~\n");
             ui->connectButton->setText("Connect");
             ui->fileTree->clear();
+            this->OldPath = "";
         }
     }
 }
@@ -123,13 +125,17 @@ void MainWindow::on_downButton_clicked()
     if(curItem && CNCconnected)
     {
         QString type = curItem->text(0);
-        if(type=="Dir")
+        if(type=="1")
             return;
         QString downName = curItem->text(1);
         QString saveDir = QFileDialog::getExistingDirectory(this, "Choose save path");
+        if(!OldPath.isEmpty())
+        {
+            downName = OldPath + "/" + downName;
+        }
         QString filecode = ThisCNC->GetNcProgramByPath(downName);
         QFile file;
-        file.setFileName(saveDir + "/" + downName);
+        file.setFileName(saveDir + "/" + curItem->text(1));
         if(file.open(QIODevice::WriteOnly | QIODevice::Text))
         {
             QTextStream stream(&file);
@@ -155,6 +161,10 @@ void MainWindow::on_upButton_clicked()
     QString fileName = localFile.mid(p + 1);
     if(CNCconnected)
     {
+        if(!OldPath.isEmpty())
+        {
+            fileName = OldPath + "/" + fileName;
+        }
         bool success = ThisCNC->SetNcProgramByPath(filecode,fileName);
         if(success)
         {
@@ -162,7 +172,7 @@ void MainWindow::on_upButton_clicked()
         }
 
         ui->fileTree->clear();
-        QStringList Files = ThisCNC->GetSubItemInfoOfADir("");
+        QStringList Files = ThisCNC->GetSubItemInfoOfADir(OldPath);
         foreach(QString file,Files)
         {
             QStringList fileinfo = file.split("|");
@@ -184,9 +194,13 @@ void MainWindow::on_deleteButton_clicked()
     if(curItem && CNCconnected)
     {
         QString type = curItem->text(0);
-        if(type=="Dir")
+        if(type=="1")
             return;
         QString downName = curItem->text(1);
+        if(!OldPath.isEmpty())
+        {
+            downName = OldPath + "/" + downName;
+        }
         bool success = ThisCNC->DelNcProgramByPath(downName);
         if(success)
         {
@@ -194,7 +208,7 @@ void MainWindow::on_deleteButton_clicked()
         }
 
         ui->fileTree->clear();
-        QStringList Files = ThisCNC->GetSubItemInfoOfADir("");
+        QStringList Files = ThisCNC->GetSubItemInfoOfADir(OldPath);
         foreach(QString file,Files)
         {
             QStringList fileinfo = file.split("|");
@@ -213,13 +227,18 @@ void MainWindow::on_fileTree_itemDoubleClicked(QTreeWidgetItem *item, int column
 {
     column = column > 0 ? column : 0;
     QString type = item->text(0);
-    if(type!="Dir")
+    if(type!="1")
         return;
     if(CNCconnected)
     {
         QString path = item->text(1);
         ui->fileTree->clear();
+        if(!OldPath.isEmpty())
+        {
+            path = OldPath + "/" + path;
+        }
         QStringList Files = ThisCNC->GetSubItemInfoOfADir(path);
+        OldPath = path;
         foreach(QString file,Files)
         {
             QStringList fileinfo = file.split("|");

@@ -96,7 +96,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>root</string>
+     <string>asdf</string>
     </property>
     <property name="cursorMoveStyle">
      <enum>Qt::LogicalMoveStyle</enum>
@@ -138,7 +138,7 @@
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>xuanyu</string>
     </property>
     <property name="cursorMoveStyle">
      <enum>Qt::LogicalMoveStyle</enum>

@@ -44,5 +44,7 @@ private:
     QString allInfo;
 
     void SetNetInfo(QString info);
+
+    QString OldPath;
 };
 #endif // MAINWINDOW_H

@@ -57,7 +57,7 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
         {
             path = OldPath + path + "/";
         }
-        OldPath = path;
+        //OldPath = path;
     }
     std::string pathStr = path.toStdString();
     if(pathStr[pathStr.length() - 1] != '/')
@@ -70,35 +70,34 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
     short num = 0;
     short count = 0;
 
-    IDBPDFSDIR idbPdfSDir;
-    ODBPDFSDIR odbPdfSDirs[100];
-    memset(&idbPdfSDir, 0, sizeof(idbPdfSDir));
-    strcpy(idbPdfSDir.path, temppath);
-    while(true)
-    {
-        num = 100;
-        idbPdfSDir.req_num = count;
-        memset(odbPdfSDirs, 0, sizeof(odbPdfSDirs));
-        ret = cnc_rdpdf_subdir(h,&num,&idbPdfSDir, odbPdfSDirs);
+//    IDBPDFSDIR idbPdfSDir;
+//    ODBPDFSDIR odbPdfSDirs[100];
+//    memset(&idbPdfSDir, 0, sizeof(idbPdfSDir));
+//    strcpy(idbPdfSDir.path, temppath);
+//    while(true)
+//    {
+//        num = 100;
+//        idbPdfSDir.req_num = count;
+//        memset(odbPdfSDirs, 0, sizeof(odbPdfSDirs));
+//        ret = cnc_rdpdf_subdir(h,&num,&idbPdfSDir, odbPdfSDirs);
 
-        count += num;
-        for(int i = 0;i < num; i++)
-        {
-            QString newstr(odbPdfSDirs[i].d_f);
-            result.append("Dir|" + newstr);
-        }
-        if (num < 100)
-        {
-            break;
-        }
-    }
+//        count += num;
+//        for(int i = 0;i < num; i++)
+//        {
+//            QString newstr(odbPdfSDirs[i].d_f);
+//            result.append("1|" + newstr);
+//        }
+//        if (num < 100)
+//        {
+//            break;
+//        }
+//    }
 
     IDBPDFADIR idbPath;
     ODBPDFADIR prg[100];
     count = 0;
     memset(&idbPath, 0, sizeof(IDBPDFADIR));
     strcpy(idbPath.path, temppath);
-    int fileCount = 0;
     while(true)
     {
         num = 100;
@@ -118,12 +117,14 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
             char prgn[10] = {0};
             if (prg[i].data_kind == 0)
             {
-                continue;
+                QString newstr(prg[i].d_f);
+                result.append("1|" + newstr);
             }
-            fileCount++;
-
-            QString newstr(ToStdPrgName(prg[i].d_f,prgn));
-            result.append("File|" + newstr);
+            if (prg[i].data_kind == 1)
+            {
+                QString newstr(ToStdPrgName(prg[i].d_f,prgn));
+                result.append("0|" + newstr);
+            }
         }
         if (num < 100)
         {
@@ -131,13 +132,18 @@ QStringList FanucCNC::GetSubItemInfoOfADir(QString path){
         }
     }
 
-    delete temppath;
+    //delete temppath;
 
     return result;
 }
 
 QString FanucCNC::GetNcProgramByPath(QString path){
     QString result;
+
+    if(!path.contains("//CNC_MEM/"))
+    {
+        path = OldPath + path;
+    }
 
     char* temppath;
     QByteArray ba = path.toLatin1();
@@ -241,7 +247,7 @@ QString FanucCNC::GetNcProgramByPath(QString path){
 #endif
     }
 
-    delete temppath;
+    //delete temppath;
 
     result = QString::fromStdString(prg);
 

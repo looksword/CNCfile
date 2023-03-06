@@ -369,15 +369,15 @@ int ftpsocket::Upload(QString strFileName, QString code)
     return iRet;
 }
 
-QStringList ftpsocket::GetFileList(QString strMask)
+QStringList ftpsocket::GetFileList(QString path,QString strMask)
 {
     strMask = "";
     QStringList strsFileList;
     if(CreateDataSocket())
     {
-        //SendCommand("NLST " + strMask);
-        //SendCommand("NLST");
-        SendCommand("LIST ./");
+        //SendCommand("LIST ./");
+        QString temppath = "LIST " + path;
+        SendCommand(temppath.toStdString());
         if(iReplyCode == 550)
         {
             return strsFileList;
@@ -422,10 +422,10 @@ QStringList ftpsocket::GetFileList(QString strMask)
     return strsFileList;
 }
 
-QStringList ftpsocket::GetDirList()
+QStringList ftpsocket::GetDirList(QString path)
 {
     QStringList folder;
-    QStringList strsFileList = GetFileList("*.*");
+    QStringList strsFileList = GetFileList(path,"*.*");
     if(!strsFileList.isEmpty())
     {
         foreach (QString dir, strsFileList)

@@ -21,16 +21,21 @@ bool BrotherCNC::DisConnect(){
 QStringList BrotherCNC::GetSubItemInfoOfADir(QString path){
     QStringList result;
 
-    if(path.length() > 0)
+    if(path.isEmpty())
     {
-        FtpClient->ChangeDir(path);
+        path = "/";
     }
-    else
+    if(path.left(1) != "/")
     {
-        FtpClient->ChangeDir("/");
+        path = "/" + path;
     }
+    if(path.right(1) != "/")
+    {
+        path.append("/");
+    }
+    //FtpClient->ChangeDir(path);
 
-    QStringList Files = FtpClient->GetFileList("*.*");
+    QStringList Files = FtpClient->GetFileList(path,"*.*");
 
     QString type = "";
     foreach(QString file,Files)
@@ -43,7 +48,7 @@ QStringList BrotherCNC::GetSubItemInfoOfADir(QString path){
             {
                 continue;
             }
-            type = "Dir|" + fileinfo.last();
+            type = "1|" + fileinfo.last();
             result.append(type);
         }
     }
@@ -57,10 +62,12 @@ QStringList BrotherCNC::GetSubItemInfoOfADir(QString path){
             {
                 continue;
             }
-            type = "File|" + fileinfo.last();
+            type = "0|" + fileinfo.last();
             result.append(type);
         }
     }
+
+    //FtpClient->ChangeDir("/");
 
     return result;
 }
@@ -76,8 +83,8 @@ QString BrotherCNC::GetNcProgramByPath(QString path){
 QString BrotherCNC::GetNCDirByPath(QString path){
     QString result;
 
-    FtpClient->ChangeDir(path);
-    QStringList file = FtpClient->GetFileList("*.*");
+    //FtpClient->ChangeDir(path);
+    QStringList file = FtpClient->GetFileList(path,"*.*");
     std::string msg = "[";
     if(!file.isEmpty())
     {
@@ -117,9 +124,9 @@ QString BrotherCNC::GetOneDirByPath(QString path, QStringList &dirs)
     else
     {
         FtpClient->ChangeDir("/");
-        dirs = FtpClient->GetDirList();
+        dirs = FtpClient->GetDirList(path);
     }
-    QStringList file = FtpClient->GetFileList("*.NC");
+    QStringList file = FtpClient->GetFileList(path,"*.NC");
     std::string msg = "[";
     if(!file.isEmpty())
     {

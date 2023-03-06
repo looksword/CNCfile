@@ -33,8 +33,8 @@ public:
     QString Download(QString strRemoteFileName);
     int Upload(QString strFileName, QString code);
 
-    QStringList GetFileList(QString strMask);
-    QStringList GetDirList();
+    QStringList GetFileList(QString path,QString strMask);
+    QStringList GetDirList(QString path);
     int DeleteRemoteFile(QString strFileName);
     int ReNameFile(QString strOldFileName, QString strNewFileName);
 
